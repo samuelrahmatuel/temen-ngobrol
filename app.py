@@ -100,5 +100,5 @@ with st.container():
 
         st.session_state["chat_history"] = chat_history
 
-st.write("Next Progress : Better Algorithms")
+st.write("Next Progress : Better UI, Better Algorithms, Implementing Deep Learning for recommendation, Add more features")
 st.markdown("<p style='text-align: right; font-style: italic;'>Created by: <a href='https://rahmatuelsamuel.com'>Rahmatuel Samuel</a></p>", unsafe_allow_html=True)
