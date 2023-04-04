@@ -30,8 +30,9 @@ def match_keywords(user_input, questions):
 st.set_page_config(page_title="Chatbot", page_icon=":robot_face:")
 
 st.title("Self Learning Teman-Bicara")
-st.write("Halo, saya adalah Teman-Bicara. Saya adalah project iseng yand dibuat dengan bahasa Python, walaupun simple saya bisa belajar sendiri loh, kaget kan?.")
-st.write("Kamu bisa tanya apa saja tergantung apakah saya sudah tau atau belum. Kalau belum tau saya akan bertanya dan kamu mengajarkan saya dengan kode (// jawaban). Lalu saya akan mengingatnya secara permanen untuk kedepan dan untuk penanya lain, keren kan?. ps ; maaf ya hapusnya masih manual, hehe")
+st.write("Halo, saya adalah Teman-Bicara. Saya adalah project iseng yand dibuat dengan bahasa Python, walaupun simple saya bisa belajar sendiri loh, kaget kan?")
+st.write("Kamu bisa tanya apa saja tergantung apakah saya sudah tau atau belum. Kalau belum tau saya akan bertanya dan kamu mengajarkan saya dengan kode (// jawaban).")
+st.write("Lalu saya akan mengingatnya secara permanen untuk kedepan dan untuk penanya lain, keren kan?. ps ; maaf ya hapusnya masih manual, hehe")
 
 knowledge_base = load_knowledge_base('knowledge_base.json')
 faq_questions = [q['question'] for q in knowledge_base['questions']]
@@ -99,4 +100,5 @@ with st.container():
 
         st.session_state["chat_history"] = chat_history
 
+st.write("Next Progress : Better Algorithms")
 st.markdown("<p style='text-align: right; font-style: italic;'>Created by: <a href='https://rahmatuelsamuel.com'>Rahmatuel Samuel</a></p>", unsafe_allow_html=True)
