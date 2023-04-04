@@ -27,39 +27,76 @@ def match_keywords(user_input, questions):
 
     return best_match
 
-st.title("Chatbot")
+st.set_page_config(page_title="Chatbot", page_icon=":robot_face:")
 
-container = st.container()
-
-user_input = st.text_input("Ask a question or use '// ' before your input to provide an answer (e.g. '// answer'):", key='input_box')
-submit_button = st.button("Submit")
+st.title("Self Learning Teman-Bicara")
+st.write("Halo, saya adalah Teman-Bicara. Saya adalah project iseng yand dibuat dengan bahasa Python, walaupun simple saya bisa belajar sendiri loh, kaget kan?.")
+st.write("Kamu bisa tanya apa saja tergantung apakah saya sudah tau atau belum. Kalau belum tau saya akan bertanya dan kamu mengajarkan saya dengan kode (// jawaban). Lalu saya akan mengingatnya secara permanen untuk kedepan dan untuk penanya lain, keren kan?. ps ; maaf ya hapusnya masih manual, hehe")
 
 knowledge_base = load_knowledge_base('knowledge_base.json')
-last_question = st.session_state.get("last_question", None)
+faq_questions = [q['question'] for q in knowledge_base['questions']]
+random.shuffle(faq_questions)
 
-if submit_button:
-    if user_input.startswith("//"):
-        new_answer = user_input[2:].strip()
+with st.expander("Frequently Asked Questions"):
+    selected_faq = st.selectbox("", faq_questions[:10])
 
-        if last_question:
-            knowledge_base["questions"].append({"question": last_question, "answer": new_answer})
-            save_knowledge_base('knowledge_base.json', knowledge_base)
-            st.write(f"Bot: Thank you! I've learned that the answer to '{last_question}' is '{new_answer}'.")
-        else:
-            st.write("Bot: I can't find the last question you asked. Please ask a question first.")
+    if selected_faq:
+        answer = next((q["answer"] for q in knowledge_base["questions"] if q["question"] == selected_faq), None)
+        st.write(f"Q: {selected_faq}")
+        st.write(f"A: {answer}")
 
-        st.session_state["last_question"] = None
+with st.expander("Chat History"):
+    chat_history = st.session_state.get("chat_history", [])
+    for chat in chat_history:
+        user_input = chat["user_input"]
+        bot_response = chat["bot_response"]
 
-    else:
-        matched_question = match_keywords(user_input, [q["question"] for q in knowledge_base["questions"]])
+        if user_input:
+            st.write(f"User: {user_input}")
+        if bot_response:
+            st.write(bot_response)
 
-        if matched_question:
-            answer = next((q["answer"] for q in knowledge_base["questions"] if q["question"] == matched_question), None)
-            container.markdown(f"<div style='text-align: right;'><strong>You:</strong> {user_input}</div>", unsafe_allow_html=True)
-            container.markdown(f"<div><strong>Bot:</strong> {answer}</div>", unsafe_allow_html=True)
+with st.container():
+    st.write("Tanyakan saya sesuatu disini, kalau saya belum tau gunakan ini setelah bertanya '// '")
+    user_input = st.text_input("", key='input_box')
+    submit_button = st.button("Submit")
+
+    last_question = st.session_state.get("last_question", None)
+
+    if submit_button:
+        if user_input.startswith("//"):
+            new_answer = user_input[2:].strip()
+
+            if last_question:
+                knowledge_base["questions"].append({"question": last_question, "answer": new_answer})
+                save_knowledge_base('knowledge_base.json', knowledge_base)
+                st.write(f"Bot: Makasih Loh udah ngajarin! Saya jadi ngerti kalo jawaban pertanyaan '{last_question}' itu tuh ini '{new_answer}' okedehh.")
+            else:
+                st.write("Bot: Hmmm, kamu belum nanya deh kayaknya atau udah kujawab kalii")
+
             st.session_state["last_question"] = None
+
+            chat_history.append({"user_input": user_input, "bot_response": f"Bot: Makasih Loh udah ngajarin! Saya jadi ngerti kalo jawaban pertanyaan '{last_question}' itu tuh ini '{new_answer}' okedehh."})
+
         else:
-            answer = "I don't know the answer. Can you teach me?"
-            container.markdown(f"<div style='text-align: right;'><strong>You:</strong> {user_input}</div>", unsafe_allow_html=True)
-            container.markdown(f"<div><strong>Bot:</strong> {answer}</div>", unsafe_allow_html=True)
-            st.session_state["last_question"] = user_input
+            matched_question = match_keywords(user_input, [q["question"] for q in knowledge_base["questions"]])
+
+            if matched_question:
+                answer = next((q["answer"] for q in knowledge_base["questions"] if q["question"] == matched_question), None)
+                st.write(f"User: {user_input}")
+                st.write(f"Bot: {answer}")
+                st.session_state["last_question"] = None
+
+                chat_history.append({"user_input": user_input, "bot_response": f"Bot: {answer}"})
+            
+            else:
+                answer = "Gatauu jawabannya bingung euy, ajarin dong (// jawaban benernya)"
+                st.write(f"User: {user_input}")
+                st.write(f"Bot: {answer}")
+                st.session_state["last_question"] = user_input
+
+                chat_history.append({"user_input": user_input, "bot_response": f"Bot: {answer}"})
+
+        st.session_state["chat_history"] = chat_history
+
+st.markdown("<p style='text-align: right; font-style: italic;'>Created by: <a href='https://rahmatuelsamuel.com'>Rahmatuel Samuel</a></p>", unsafe_allow_html=True)
